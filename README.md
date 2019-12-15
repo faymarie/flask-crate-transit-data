@@ -10,7 +10,7 @@ A flask app that inserts transit data into CrateDB.
 
 Or, if you run docker machine VirtualBox "default" on Windows:
 
-``sh$ docker-machine ssh default "sudo systctl -w vm.max_map_count=262144"``
+``sh$ docker-machine ssh default "sudo sysctl -w vm.max_map_count=262144"``
 
 3) Set up the official CrateDB Docker image:
 
@@ -21,5 +21,5 @@ Or, if you run docker machine VirtualBox "default" on Windows:
 ``http://localhost:4200/``
 
 If CrateDB is not running locally, replace localhost with the hostname CrateDB is running on. 
-Run ``sh$ hostname -i`` to detect our host ip.
+Run ``sh$ hostname -i`` to detect your host ip.
 

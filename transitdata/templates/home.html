@@ -1,16 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
-
-    {% for tile in tiles %}
-        <article class="media content-section">
-            <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="#">{{ tile.author }}</a>
-                <small class="text-muted">{{ tile.date_posted }}</small>
-            </div>
-            <h2><a class="article-title" href="#">{{ tile.title }}</a></h2>
-            <p class="article-content">{{ tile.content }}</p>
-            </div>
-        </article>
-    {% endfor %}
+<div>
+    <input type="submit" name="insert_button" value="Insert Data" class="btn btn-outline-info">
+</div>
+<br>
+<article class="media content-section">
+    <div class="media-body">
+        <p class="article-content">Press the above button to insert data into CrateDB. </p>
+    </div>
+</article>
 {% endblock content %}

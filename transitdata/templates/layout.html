@@ -30,7 +30,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" href="/">Home</a>
+                        <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                        <a class="nav-item nav-link" href="{{ url_for('main.success') }}">Success</a>
                     </div>
                 </div>
             </div>
@@ -49,10 +50,6 @@
                     {% endfor %}
                     {% endif %}
                     {% endwith %}
-                    <div>
-                        <input type="submit" name="insert_button" value="Insert Data" class="btn btn-outline-info">
-                    </div>
-                    
                     {% block content %}{% endblock %}
                 </div>
             </div>
