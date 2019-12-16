@@ -1,7 +1,5 @@
 import os
 
-
-
 class Config(object):
     SQLALCHEMY_DATABASE_URI = 'crate://crate@192.168.99.101:4200'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

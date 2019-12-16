@@ -9,7 +9,7 @@ from flask_cors import CORS
 # from crate import client
 from sqlalchemy.ext.declarative import declarative_base
 from transitdata.config import Config
-from transitdata.models import Base, Character
+from transitdata.models import Base
 
 def create_app(config_class=Config):
     """ Initialize core application. """
