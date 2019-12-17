@@ -1,5 +1,5 @@
 from flask import render_template, request, Blueprint, redirect, url_for
-
+from transitdata.main.utils import insert_transitdata
 # from transitdata.models import Tile
 
 # from flask import (render_template, request, url_for, 
@@ -8,6 +8,7 @@ from flask import render_template, request, Blueprint, redirect, url_for
 
 
 main = Blueprint('main', __name__)
+
 
 tiles = [
     {
@@ -34,7 +35,7 @@ def home():
         # flash('The data has been inserted!', 'success')
         return render_template('success.html')
     elif request.method == 'GET':
-        # engine.create_all()
+        insert_transitdata()
         return render_template('home.html')
 
 @main.route('/success')

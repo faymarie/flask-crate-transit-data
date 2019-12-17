@@ -1,35 +1,22 @@
 from flask import current_app
-# from transitdata import Base
 from uuid import uuid4
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
-# from crate.client.sqlalchemy import types
+from crate.client.sqlalchemy import types
+
+Base = declarative_base()
 
 def gen_key():
     return str(uuid4())
-
-Base = declarative_base()
-# class Character(Base):
-    
-#     __tablename__ = 'characters'
-#     id = sa.Column(sa.String, primary_key=True, default=gen_key)
-#     name = sa.Column(sa.String)
-#     quote = sa.Column(sa.String)
-
-    #  __mapper_args__ = {
-    #      'exclude_properties': ['name_ft', 'quote_ft']
-    # }
-
-# Base = declarative_base()
 
 class Agency(Base):
     """ Model for transit agencies with service represented in this dataset. """
 
     __tablename__ = 'agency'
 
-    id = sa.Column(sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column(sa.String, primary_key=True, default=gen_key)
     agency_id = sa.Column (sa.Integer, nullable=False)  # Foreign key
-    agency_name = sa.Column (sa.Integer, nullable=False)
+    agency_name = sa.Column (sa.String, nullable=False)
     agency_url = sa.Column (sa.String, nullable=False)  
     agency_timezone = sa.Column (sa.String, nullable=False)
     agency_lang = sa.Column (sa.String, nullable=True)
@@ -38,13 +25,22 @@ class Agency(Base):
     def __repr__(self):
         return "<Agency: {}>".format(self.agency_name)
 
+    def __init__(self, agency_id, agency_name, agency_url,
+                agency_timezone, agency_lang, agency_phone):
+        self.agency_id = agency_id
+        self.agency_name = agency_name
+        self.agency_url = agency_url
+        self.agency_timezone = agency_timezone
+        self.agency_lang = agency_lang
+        self.agency_phone = agency_phone
 
 class Calendar (Base):
     """ Model for service dates specified using a weekly schedule with start and end dates."""
 
     __tablename__ = 'calendar'
 
-    service_id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column(sa.String, primary_key=True, default=gen_key)
+    service_id = sa.Column (sa.Integer, nullable=False)
     monday = sa.Column (sa.Integer, nullable=False)
     tuesday = sa.Column (sa.Integer, nullable=False)
     wednesday = sa.Column (sa.Integer, nullable=False)
@@ -52,18 +48,31 @@ class Calendar (Base):
     friday = sa.Column (sa.Integer, nullable=False)
     saturday = sa.Column (sa.Integer, nullable=False)
     sunday = sa.Column (sa.Integer, nullable=False)
-    start_date = sa.Column (sa.DateTime, nullable=False)   # Start service day for the service interval. Service day in the YYYYMMDD format.
-    end_date = sa.Column (sa.DateTime, nullable=False)    # End service day for the service interval. This service day is included in the interval.
+    start_date = sa.Column (sa.DateTime(timezone=False), nullable=False)   # Start service day for the service interval. Service day in the YYYYMMDD format.
+    end_date = sa.Column (sa.DateTime(timezone=False), nullable=False)    # End service day for the service interval. This service day is included in the interval.
     
     def __repr__(self):
-        return '<Calendar Service Id {}>'.format(self.agency_id)
+        return '<Calendar Service Id {}>'.format(self.service_id)
 
+    def __init__(self, service_id, monday, tuesday, wednesday, thursday,
+                friday, saturday, sunday, start_date, end_date):
+        self.service_id = service_id
+        self.monday = monday
+        self.tuesday= tuesday
+        self.wednesday = wednesday
+        self.thursday = thursday
+        self.friday = friday
+        self.saturday = saturday
+        self.sunday = sunday
+        self.start_date = start_date
+        self.end_date = end_date
+    
 class CalendarDates (Base):
     """ Model for transportation service exceptions """
 
     __tablename__ = 'calendar_dates'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     agency_id = sa.Column (sa.Integer, nullable=False)             # foreign key to calendar      
     date = sa.Column (sa.DateTime(timezone=False), nullable=False)
     exception_type = sa.Column (sa.Integer, nullable=False)
@@ -71,12 +80,17 @@ class CalendarDates (Base):
     def __repr__(self):
         return '<Service exceptions {} Date: {}>'.format(self.agency_id, self.date)
 
+    def __init__(self, agency_id, date, exception_type):
+        self.agency_id = agency_id
+        self.date = date
+        self.exception_type = exception_type
+
 class Frequencies (Base):
     """ Model representing trips that operate on regular headways (time between trips). """
 
     __tablename__ = 'frequencies'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     trip_id = sa.Column (sa.Integer, nullable=False)
     start_time = sa.Column (sa.DateTime(timezone=False), nullable=False) # Time at which the first vehicle departs from the first stop of the trip with the specified headwa               
     end_time = sa.Column (sa.DateTime (timezone=False), nullable=False)  # Time at which service changes to a different headway (or ceases) at the first stop in the trip.
@@ -85,6 +99,11 @@ class Frequencies (Base):
 
     def __repr__(self):
         return '<Transport frequencies {} Date: {}>'.format(self.trip_id, self.headway_secs)
+
+    def __init__(self, trip_id, start_time, end_time, headway_secs, exact_times):
+        self.trip_id = trip_id
+        self.start_time = start_time
+        self.end_time = end_time
 
 class Routes (Base):
     """ 
@@ -95,7 +114,7 @@ class Routes (Base):
 
     __tablename__ = 'routes'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     route_id = sa.Column (sa.String, nullable=False)
     agency_id = sa.Column (sa.Integer, nullable=False)  # foreign key to calendar    
     route_short_name = sa.Column (sa.String, nullable=False)
@@ -108,18 +127,48 @@ class Routes (Base):
     def __repr__(self):
         return '<Route id: {}, short name: {}>'.format(self.route_id, self.route_short_name)
 
+    def __init__(self, route_id, agency_id, route_short_name, route_long_name, route_type,
+                route_color, route_text_color, route_desc):
+        self.route_id = route_id
+        self.agency_id = agency_id
+        self.route_short_name = route_short_name
+        self.route_long_name = route_long_name
+        self.route_type = route_type
+        self.route_color = route_color
+        self.route_text_color = route_text_color
+        self.route_desc = route_desc
+
 class ServiceAlerts (Base):             # parse from json
     """ Model for Service Alerts """
     
     __tablename__ = 'service_alerts'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
-    gtfs_realtime_version = sa.Column (sa.String, nullable=True)
-    incrementally = sa.Column (sa.String, nullable=True)
-    timestamp = sa.Column (sa.DateTime, nullable=True)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
+    details = sa.Column(types.Object)
 
-    def __repr__(self):
-        return '<Service Alerts {} {}>'.format(self.id, self.timestamp)
+    def __init__(self, details):
+        self.details = details
+
+#     gtfs_realtime_version = sa.Column (sa.String, nullable=True)
+#     incrementally = sa.Column (sa.String, nullable=True)
+#     timestamp = sa.Column (sa.DateTime, nullable=True)
+# class ServiceAlerts (Base):             # parse from json
+#     """ Model for Service Alerts """
+    
+#     __tablename__ = 'service_alerts'
+
+#     id = sa.Column (sa.String, primary_key=True, default=gen_key)
+#     gtfs_realtime_version = sa.Column (sa.String, nullable=True)
+#     incrementally = sa.Column (sa.String, nullable=True)
+#     timestamp = sa.Column (sa.DateTime, nullable=True)
+
+#     def __repr__(self):
+#         return '<Service Alerts {} {}>'.format(self.id, self.timestamp)
+
+#     def __init__(self, gtfs_realtime_version, incrementally, timestamp):
+#         self.gtfs_realtime_version = gtfs_realtime_version
+#         self.incrementally = incrementally
+#         self.timestamp = timestamp
 
 class Shapes (Base):
     """ 
@@ -134,15 +183,21 @@ class Shapes (Base):
     
     __tablename__ = 'shapes'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     shape_id = sa.Column (sa.Integer, nullable=False)
     shape_pt_lat = sa.Column (sa.Float, nullable=False)
     shape_pt_lon = sa.Column (sa.Float, nullable=False)
-    shape_pt_lat = sa.Column (sa.Integer, nullable=False)
+    shape_pt_sequence = sa.Column (sa.Integer, nullable=False)
 
     def __repr__(self):
         return '<Travel shape {} lat: {} lon: >'.format(self.shape_id, \
             self.shape_pt_lat, self.shape_pt_lon)
+
+    def __init__(self, shape_id, shape_pt_lat, shape_pt_lon, shape_pt_sequence):
+            self.shape_id = shape_id
+            self.shape_pt_lat = shape_pt_lat
+            self.shape_pt_lon = shape_pt_lon
+            self.shape_pt_sequence = shape_pt_sequence
 
 class Stops (Base):
     """ 
@@ -153,8 +208,8 @@ class Stops (Base):
     
     __tablename__ = 'stops'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
-    stop_id = sa.Column (sa.Integer, nullable=False)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
+    stop_id = sa.Column (sa.String, nullable=False)
     stop_code = sa.Column (sa.Float, nullable=True)
     stop_name = sa.Column (sa.String, nullable=False)
     stop_desc = sa.Column (sa.Float, nullable=True)
@@ -169,6 +224,21 @@ class Stops (Base):
     def __repr__(self):
         return '<Transport stops {} {}>'.format(self.stop_id,self.stop_name)
 
+    def __init__(self, stop_id, stop_code, stop_name, stop_desc, 
+                stop_lat, stop_lon , location_type, parent_station, wheelchair_boarding,
+                platform_code, zone_id):
+            self.stop_id = stop_id
+            self.stop_code = stop_code
+            self.stop_name = stop_name
+            self.stop_desc = stop_desc
+            self.stop_lat = stop_lat
+            self.stop_lon = stop_lon
+            self.location_type = location_type
+            self.parent_station = parent_station
+            self.wheelchair_boarding = wheelchair_boarding
+            self.platform_code= platform_code
+            self.zone_id = zone_id    
+
 class Trips (Base):
     """ 
     Trips for each route. A trip is a sequence of 
@@ -178,7 +248,7 @@ class Trips (Base):
     
     __tablename__ = 'trips'
     
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     route_id = sa.Column (sa.String, nullable=False)    # reference routes.route_id               
     service_id = sa.Column (sa.Integer, nullable=False)   # reference calendar.service_id or calendar_dates.service_id    
     trip_id = sa.Column (sa.Integer, nullable=False)          
@@ -192,8 +262,21 @@ class Trips (Base):
  
     def __repr__(self):
         return '<Trips {} {}>'.format(self.trip_id, self.trip_headsign)
-                
-                        
+
+    def __init__(self, route_id, service_id, trip_id, trip_headsign,
+                trip_short_name, direction_id, block_id, shape_id, wheelchair_accessible,
+                bikes_allowed):
+            self.route_id = route_id
+            self.service_id = service_id
+            self.trip_id = trip_id
+            self.trip_headsign = trip_headsign
+            self.trip_short_name = trip_short_name
+            self.direction_id = direction_id
+            self.block_id = block_id
+            self.shape_id = shape_id            
+            self.wheelchair_accessible = wheelchair_accessible
+            self.bikes_allowed = bikes_allowed  
+
 class StopTimes (Base):
     """ 
     Model describing times that a vehicle arrives 
@@ -203,7 +286,7 @@ class StopTimes (Base):
     
     __tablename__ = 'stop_times'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     trip_id = sa.Column (sa.Integer, nullable=False)         # references trips.trip_id        
     arrival_time = sa.Column (sa.String, nullable=False)
     departure_time = sa.Column (sa.String, nullable=False)
@@ -215,6 +298,17 @@ class StopTimes (Base):
  
     def __repr__(self):
         return '<Stop Times {} {}>'.format(self.stop_id, self.arrival_time)
+    
+    def __init__(self, trip_id, arrival_time, departure_time, stop_id, stop_sequence, 
+                pickup_type,  drop_off_type, stop_headsign):
+            self.trip_id = trip_id
+            self.arrival_time = arrival_time
+            self.departure_time = departure_time
+            self.stop_id = stop_id
+            self.stop_sequence = stop_sequence
+            self.pickup_type = pickup_type
+            self.drop_off_type = drop_off_type
+            self.stop_headsign = stop_headsign
 
 class Transfers (Base):
     """ 
@@ -225,7 +319,7 @@ class Transfers (Base):
     
     __tablename__ = 'transfers'
 
-    id = sa.Column (sa.Integer, primary_key=True, default=gen_key)
+    id = sa.Column (sa.String, primary_key=True, default=gen_key)
     from_stop_id = sa.Column (sa.String, nullable=False)        # references stops.stop_id
     to_stop_id = sa.Column (sa.String, nullable=False)          # references stops.stop_id
     transfer_type = sa.Column (sa.Integer, nullable=False)
@@ -237,3 +331,14 @@ class Transfers (Base):
     
     def __repr__(self):
         return '<Transfers {} {}>'.format(self.from_stop_id, self.to_stop_id)
+    
+    def __init__(self, from_stop_id, to_stop_id, transfer_type, min_transfer_time,
+                from_route_id, to_route_id, from_trip_id, to_trip_id):
+            self.from_stop_id = from_stop_id
+            self.to_stop_id = to_stop_id
+            self.transfer_type = transfer_type
+            self.min_transfer_time, = min_transfer_time,
+            self.from_route_id = from_route_id
+            self.to_route_id = to_route_id
+            self.from_trip_id = from_trip_id
+            self.to_trip_id = to_trip_id

@@ -1,107 +1,83 @@
-from transitdata import connection
 
-# class (PostResource):
-#     """
-#     Resource for guestbook.posts
-#     Supported methods: GET, PUT, DELETE
-#     """
+import pandas as pd
+import numpy as np
+import os
+import glob
+import json
+from flask import flash
+import sqlalchemy as sa
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, mapper
+from transitdata.models import Base, Agency
+from transitdata.config import Config
 
 
-# class CrateResource(Resource):
+# source: https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
+def get_class_by_tablename(table_fullname):
+    """
+    Return class reference mapped to table.
+    :param table_fullname: String with fullname of table.
+    :return: Class reference or None.
 
-#     __name__ = ''
-#     __table__ = ''
+    """
+    for c in Base._decl_class_registry.values():
+        if hasattr(c, '__table__') and c.__table__.fullname == table_fullname:
+            return c
 
-#     def __init__(self):
-#         super(CrateResource, self).__init__()
-#         self.cursor = self.connection.cursor()
 
-#     @property
-#     def connection(self):
-#         if not 'conn' in app_globals:
-#             app_globals.conn = connect(app.config['CRATE_HOST'],
-#                                        error_trace=True)
-#         return app_globals.conn
+def parse_to_datetime(df):
+    dt_objects = ['date', 'start_date', 'end_date', 'start_time', 'end_time']
+    for col in df.columns:
+        if col in dt_objects:
+            df[col] = pd.to_datetime(df[col], format='%Y%m%d')
 
-#     def error(self, message, status=404):
-#         return (dict(
-#             error=message,
-#             status=status,
-#         ), status)
+    return df
 
-#     def refresh_table(self):
-#         self.cursor.execute("REFRESH TABLE {}".format(self.__table__))
 
-#     def convert(self, description, results):
-#         cols = [c[0] for c in description]
-#         return [dict(zip(cols, r)) for r in results]
+def insert_data_from_file(file_path):
 
-#     def not_found(self, **kw):
-#         keys = ', '.join(('{}="{}"'.format(k,v) for k,v in kw.items()))
-#         return self.error('{} with {} not found'.format(self.__name__, keys), 404)
+    # connect to crateDB and initiate a session
+    engine = sa.create_engine(Config.SQLALCHEMY_DATABASE_URI)
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-#     def argument_required(self, argument):
-#         return self.error('Argument "{}" is required'.format(argument), 400)
+    # get table name from file
+    table_name = file_path.split('/')[-1][:-4]
+    print(table_name)
+    # identify model class 
+    c = get_class_by_tablename(table_name)
+    print(c)
+    # read file into dataframe
+    data_chunks = []
+    for chunk in pd.read_csv(file_path, chunksize=200000, low_memory=False):
+        data_chunks.append(chunk)
+    df = pd.concat(data_chunks, axis=0)
+    # df = pd.read_csv(file_path, low_memory=False)
+    df.replace({np.nan:None}, inplace=True) 
+    df = parse_to_datetime(df)
 
-# class TileResource(CrateResource):
+    # get column names from file
+    cols = df.columns
 
-#     __name__ = 'Tile'
-#     __table__ = 'transit.tiles'
+    # convert data to lists
+    csv_data=df.values.tolist()
 
-# class Post(PostResource):
-#     """
-#     Resource for guestbook.posts
-#     Supported methods: GET, PUT, DELETE
-#     """
+    for row in csv_data[:3000]:
+        print(row)
+        new_entry = c(*row)
+        session.add(new_entry)
+    session.commit()
+    # flash("Account created!", "success")
 
-#     def get(self, id):
-#         self.cursor.execute("""
-#             SELECT p.*, c.name as country, c.geometry as area
-#             FROM guestbook.posts AS p, guestbook.countries AS c
-#             WHERE within(p."user"['location'], c.geometry)
-#               AND p.id = ?
-#         """, (id,))
-#         # convert response from Crate into
-#         # json-serializable object array
-#         response = self.convert(self.cursor.description,
-#                                 self.cursor.fetchall())
-#         if self.cursor.rowcount == 1:
-#             return response[0], 200
-#         else:
-#             return self.not_found(id=id)
+def parse_json_file():
+    service_alert = ServiceAlerts()
+    service_alert.details = {}
+    service_alert.details['gender'] = 'male' #gtfs_realtime_version
+    service_alert.details['gender'] = 'male' #incrementality
+    service_alert.details['timestamp'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(1347517370)) #timestamp
 
-#     def put(self, id):
-#         reqparse = reqparser.RequestParser()
-#         reqparse.add_argument('text', type=str, location='json')
-#         data = reqparse.parse_args()
-#         if not data.text:
-#             return self.argument_required('text')
-#         self.cursor.execute("""
-#             UPDATE {}
-#             SET text = ?
-#             WHERE id = ?
-#         """.format(self.__table__), (data.text, id))
-#         self.refresh_table()
-#         return self.get(id)
-
-# class PostList(PostResource):
-#     """
-#     Resource for guestbook.posts
-#     Supported methods: POST, GET
-#     """
-
-#     def __init__(self):
-#         super(PostList, self).__init__()
-
-#     def get(self):
-#         self.cursor.execute("""
-#             SELECT p.*, c.name as country, c.geometry as area
-#             FROM guestbook.posts AS p, guestbook.countries AS c
-#             WHERE within(p."user"['location'], c.geometry)
-#             ORDER BY p.created DESC
-#         """)
-#         # convert response from Crate into
-#         # json-serializable object array
-#         response = self.convert(self.cursor.description,
-#                                 self.cursor.fetchall())
-#         return (response, 200)
+def insert_transitdata():
+    files = glob.glob("transitdata/data/*.txt")
+    print(files)
+    file_path = 'transitdata/data/agency.txt'
+    insert_data_from_file(file_path)

@@ -24,6 +24,7 @@ def create_app(config_class=Config):
     Base.metadata.create_all(engine)
 
     # register blueprints
+    
     from transitdata.main.routes import main
     from transitdata.errors.handlers import errors
     app.register_blueprint(main)
