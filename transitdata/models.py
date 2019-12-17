@@ -138,37 +138,13 @@ class Routes (Base):
         self.route_text_color = route_text_color
         self.route_desc = route_desc
 
-class ServiceAlerts (Base):             # parse from json
+class ServiceAlerts (Base):
     """ Model for Service Alerts """
     
     __tablename__ = 'service_alerts'
 
     id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    details = sa.Column(types.Object)
-
-    def __init__(self, details):
-        self.details = details
-
-#     gtfs_realtime_version = sa.Column (sa.String, nullable=True)
-#     incrementally = sa.Column (sa.String, nullable=True)
-#     timestamp = sa.Column (sa.DateTime, nullable=True)
-# class ServiceAlerts (Base):             # parse from json
-#     """ Model for Service Alerts """
-    
-#     __tablename__ = 'service_alerts'
-
-#     id = sa.Column (sa.String, primary_key=True, default=gen_key)
-#     gtfs_realtime_version = sa.Column (sa.String, nullable=True)
-#     incrementally = sa.Column (sa.String, nullable=True)
-#     timestamp = sa.Column (sa.DateTime, nullable=True)
-
-#     def __repr__(self):
-#         return '<Service Alerts {} {}>'.format(self.id, self.timestamp)
-
-#     def __init__(self, gtfs_realtime_version, incrementally, timestamp):
-#         self.gtfs_realtime_version = gtfs_realtime_version
-#         self.incrementally = incrementally
-#         self.timestamp = timestamp
+    header = sa.Column(types.Object)
 
 class Shapes (Base):
     """ 
