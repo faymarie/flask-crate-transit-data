@@ -42,37 +42,39 @@ def insert_data_from_file(file_path):
     session = Session()
 
     # get table name from file
-    # table_name = file_path.split('/')[-1][:-4]
     table_name = os.path.basename(file_path)[:-4]
-    print(table_name)
 
     # identify model class 
     c = get_class_by_tablename(table_name)
     print(c)
-    # read file into dataframe
-    data_chunks = []
-    for chunk in pd.read_csv(file_path, chunksize=200000, low_memory=False):
-        data_chunks.append(chunk)
-    df = pd.concat(data_chunks, axis=0)
 
     if table_name =='service_alerts':
-        service_alert = parse_service_alerts(df)
+        service_alert = parse_service_alerts(pd.read_csv(file_path))
         session.add(service_alert)
     else:
-        # df = pd.read_csv(file_path, low_memory=False)
-        df.replace({np.nan:None}, inplace=True) 
-        df = parse_to_datetime(df)
-
-        # get column names from file
-        cols = df.columns
+        # read file into dataframe
+        for chunk in pd.read_csv(file_path, chunksize=10000):
+            chunk.replace({np.nan:None}, inplace=True)
+            chunk = parse_to_datetime(chunk)
+            session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
+            session.flush()
+        #     data_chunks.append(chunk)
+        # data_chunks = []
+        # for chunk in pd.read_csv(file_path, chunksize=200000, low_memory=False):
+        #     data_chunks.append(chunk)
+        # df = pd.concat(data_chunks, axis=0)
+        # df.replace({np.nan:None}, inplace=True) 
+        # df = parse_to_datetime(df)
 
         # convert data to lists
-        csv_data=df.values.tolist()
+        # csv_data=df.values.tolist()
 
-        for row in csv_data[:3000]:
-            print(row)
-            new_entry = c(*row)
-            session.add(new_entry)
+        # session.bulk_insert_mappings(c, df.to_dict(orient="records"))
+        # session.flush()
+        # for row in csv_data[:3000]:
+        #     print(row)
+        #     new_entry = c(*row)
+        #     session.add(new_entry)
     session.commit()
     # flash("Account created!", "success")
 
@@ -83,6 +85,7 @@ def parse_service_alerts(df):
     data = dict(zip([val[0] for val in data], [val[1] for val in data]))
     data['gtfs_realtime_version'] = data['gtfs_realtime_version'][1:-1]
 
+    # insert document values
     service_alert = ServiceAlerts()
     service_alert.header = {}
     for el in data.items():
@@ -91,11 +94,8 @@ def parse_service_alerts(df):
 
 
 def insert_transitdata():
-    # files = glob.glob(os.path.join("transit""transitdata/static/data/*.txt")
     files = glob.glob(os.path.join("transitdata", "static", "data", "*.txt"))
     print(files)
     for file_path in files:
         print(file_path)
-
-        # file_path = 'transitdata/static/data/service_alerts.txt'
         insert_data_from_file(file_path)
