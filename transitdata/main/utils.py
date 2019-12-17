@@ -42,7 +42,8 @@ def insert_data_from_file(file_path):
     session = Session()
 
     # get table name from file
-    table_name = file_path.split('/')[-1][:-4]
+    # table_name = file_path.split('/')[-1][:-4]
+    table_name = os.path.basename(file_path)[:-4]
     print(table_name)
 
     # identify model class 
@@ -90,7 +91,11 @@ def parse_service_alerts(df):
 
 
 def insert_transitdata():
-    files = glob.glob("transitdata/data/*.txt")
+    # files = glob.glob(os.path.join("transit""transitdata/static/data/*.txt")
+    files = glob.glob(os.path.join("transitdata", "static", "data", "*.txt"))
     print(files)
-    file_path = 'transitdata/data/service_alerts.txt'
-    insert_data_from_file(file_path)
+    for file_path in files:
+        print(file_path)
+
+        # file_path = 'transitdata/static/data/service_alerts.txt'
+        insert_data_from_file(file_path)
