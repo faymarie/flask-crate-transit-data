@@ -1,6 +1,6 @@
+
 from flask import render_template, request, Blueprint, redirect, url_for, current_app, flash
 from transitdata.main.utils import insert_transitdata
-# from transitdata.models import Tile
 
 # from flask import (render_template, request, url_for, 
 #                   redirect, g as app_globals, 
@@ -29,15 +29,11 @@ tiles = [
 @main.route('/home', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        # posts = Post.query.all()
-        # insert data
-        # posts.save()
-        # flash('The data has been inserted!', 'success')
         try:
             insert_transitdata()
-            flash('The data has been inserted!', 'success')
+            flash('All data has been inserted.', 'success')
         except:
-            flash('Error inserting data.', 'error')
+            flash('Error inserting data', 'error')
         return render_template('home.html')
     elif request.method == 'GET':  
         return render_template('home.html')

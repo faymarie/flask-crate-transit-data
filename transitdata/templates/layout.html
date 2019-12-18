@@ -44,16 +44,6 @@
                     <form action="/home" method="POST">
                         <button type="submit"  name="insert_button" class="btn btn-outline-info">Insert Data</button>
                     </form>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endwith %}
-
                     {% block content %}{% endblock %}
                 </div>
             </div>
