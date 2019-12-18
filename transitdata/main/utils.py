@@ -4,7 +4,7 @@ import numpy as np
 import os
 import glob
 import json
-from flask import flash
+from flask import current_app
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, mapper
