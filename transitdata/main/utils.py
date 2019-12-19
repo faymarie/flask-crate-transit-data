@@ -2,13 +2,11 @@ import pandas as pd
 import numpy as np
 import os
 import glob
+import json
 from flask import current_app
 from transitdata import db
-# import sqlalchemy as sa
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker, mapper
+from sqlalchemy.exc import SQLAlchemyError
 from transitdata.models import Base, ServiceAlerts
-# from transitdata.config import Config
 
 
 # source: https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
@@ -46,7 +44,8 @@ def insert_data_from(file_path, table_name):
 
     # handle service alert messages, else all other files in table format
     if table_name =='service_alerts':
-        service_alert = parse_service_alerts(pd.read_csv(file_path))
+        header = parse_header_to_dict(file_path)
+        service_alert = ServiceAlerts(header)
         db.session.add(service_alert)
     else:
         for chunk in pd.read_csv(file_path, chunksize=10000):
@@ -57,35 +56,29 @@ def insert_data_from(file_path, table_name):
             
             db.session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
             db.session.flush()
-
-    db.session.commit()
-    print("Successfully inserted: " + table_name)
-
-def parse_header_to_dict(filepath):
-    """ Return header file as document-typed Object. """
+    try:
+        db.session.commit()
+        print("Successfully inserted: " + table_name)
+    except SQLAlchemyError:
+        db.session.rollback()
+        raise
+        
+    
+def parse_header_to_dict(file_path):
+    """ 
+    Return header file values as dictionary with tring values. 
+    Remove whitespaces and quotation marks. 
+        
+    """
     with open(file_path, 'r') as f:
         lines = f.readlines()
-        lines = lines[1:-1]
+        lines = lines[2:-1]
+        lines = [line.strip().replace('\"', '') for line in lines]
+        lines = [line.split(' : ') for line in lines]
+        lines = dict(zip([val[0] for val in lines], [val[1] for val in lines]))
         print(lines)
 
-def parse_service_alerts(df):
-    """ Return header file as document-typed Object. """
-
-    # parse to dictionary
-    data = df.to_dict('list')
-    data = [*data['header{'][:-1]]
-    data = [item.split(' : ') for item in data]
-    data = dict(zip([val[0] for val in data], [val[1] for val in data]))
-    data['gtfs_realtime_version'] = data['gtfs_realtime_version'][1:-1]
-
-    # add document values
-    service_alert = ServiceAlerts()
-    service_alert.header = {}
-    for el in data.items():
-        service_alert.header[el[0]] = el[1]
-
-    return service_alert
-
+    return lines
 
 def insert_transitdata():
     """ Retrieve data files and process one-by-one to be inserted into database. """    
