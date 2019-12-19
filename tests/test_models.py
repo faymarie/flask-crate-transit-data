@@ -12,7 +12,7 @@ def test_new_agency(new_agency):
     assert new_agency.agency_url == "http://www.svf-ffo.de"
     assert new_agency.agency_timezone == "Europe/Berlin"
     assert new_agency.agency_lang == "de"
-    assert new_agency.agency_phone == ""
+    assert new_agency.agency_phone == None
     assert new_agency.id != "a bad id"
 
 def test_new_calendar(new_calendar):

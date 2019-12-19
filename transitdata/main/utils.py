@@ -61,6 +61,13 @@ def insert_data_from(file_path, table_name):
     db.session.commit()
     print("Successfully inserted: " + table_name)
 
+def parse_header_to_dict(filepath):
+    """ Return header file as document-typed Object. """
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+        lines = lines[1:-1]
+        print(lines)
+
 def parse_service_alerts(df):
     """ Return header file as document-typed Object. """
 

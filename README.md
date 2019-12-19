@@ -23,6 +23,8 @@ Or, if you run docker machine VirtualBox "default" on Windows:
 If CrateDB is not running locally, replace localhost with the hostname CrateDB is running on. 
 Run ``sh$ hostname -i`` to detect your host ip.
 
+<!-- docker-machine ip -->
+
 5) Activate your virtual environment:
 
 If you are a Mac user, activate your environment by running 
