@@ -31,3 +31,9 @@ If you are a Mac user, activate your environment by running
 ``sh$ source myenv/bin/activate``
 If you are a Windows user, activate your environment by running 
 ``sh$ source myenv/Scripts/activate``
+
+# Running test
+
+To run the tests, run the pytest module:
+
+``sh$ pytest``

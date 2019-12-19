@@ -3,10 +3,13 @@
 <br>
 <article class="media content-section">
     <div class="media-body">
-        <p class="article-content">Press the above button to insert data into CrateDB. </p>
+        <p class="article-content">Press the below button to insert data into CrateDB. </p>
     </div>
 </article>
 <div>
+    <form action="/home" method="POST">
+        <button type="submit" name="insert_button" id="insert_button" onclick="HideButton()" class="btn btn-outline-info">Insert Data</button>
+    </form>
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}

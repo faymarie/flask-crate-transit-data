@@ -41,9 +41,9 @@
         <main role="main" class="container">
             <div class="row">
                 <div class="col-md-8">
-                    <form action="/home" method="POST">
+                    <!-- <form action="/home" method="POST">
                         <button type="submit"  name="insert_button" class="btn btn-outline-info">Insert Data</button>
-                    </form>
+                    </form> -->
                     {% block content %}{% endblock %}
                 </div>
             </div>
@@ -52,6 +52,12 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript">
+        function HideButton()
+        {
+            document.getElementById('insert_button').style.display = 'none';
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

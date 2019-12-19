@@ -21,8 +21,8 @@ def test_client():
 
     yield testing_client
     
-    # context.pop()
-
+    context.pop()
+    
 test_data = []
 
 @pytest.fixture(scope="module")
@@ -132,5 +132,5 @@ def init_database():
 
     yield db
 
-    # db.session.remove()
-    # Base.metadata.drop_all(engine)
+    db.session.remove()
+    Base.metadata.drop_all(engine)

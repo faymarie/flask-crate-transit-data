@@ -1,29 +1,12 @@
-
+import time
+from transitdata import db
+from transitdata.models import Agency
 from flask import render_template, request, Blueprint, redirect, url_for, current_app, flash
 from transitdata.main.utils import insert_transitdata
-
-# from flask import (render_template, request, url_for, 
-#                   redirect, g as app_globals, 
-#                   make_response, jsonify, flash)
-
+from  sqlalchemy.sql.expression import func
 
 main = Blueprint('main', __name__)
 
-
-tiles = [
-    {
-        'author': 'Marie Klaus',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'December 25, 2019'
-    },
-    {
-        'author': 'Klausmausi',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'May 01, 2018'
-    },
-]
 
 @main.route('/')
 @main.route('/home', methods=['GET', 'POST'])
@@ -32,12 +15,16 @@ def home():
         try:
             insert_transitdata()
             flash('All data has been inserted.', 'success')
+            time.sleep(10)
+            return redirect(url_for('main.success'))
         except:
             flash('Error inserting data', 'error')
-        return render_template('home.html')
+            return render_template('home.html')
     elif request.method == 'GET':  
         return render_template('home.html')
 
 @main.route('/success')
 def success():
-        return render_template('success.html', title='Success', tiles=tiles)
+    agencies = db.session.query(Agency).limit(10).all()
+   
+    return render_template('success.html', title='Success', agencies=agencies)

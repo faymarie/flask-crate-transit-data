@@ -1,6 +1,6 @@
 from flask import current_app
 from uuid import uuid4
-import sqlalchemy as sa
+import sqlalchemy as db
 from sqlalchemy.ext.declarative import declarative_base
 from crate.client.sqlalchemy import types
 
@@ -14,13 +14,13 @@ class Agency(Base):
 
     __tablename__ = 'agency'
 
-    id = sa.Column(sa.String, primary_key=True, default=gen_key)
-    agency_id = sa.Column (sa.Integer, nullable=False)  # Foreign key
-    agency_name = sa.Column (sa.String, nullable=False)
-    agency_url = sa.Column (sa.String, nullable=False)  
-    agency_timezone = sa.Column (sa.String, nullable=False)
-    agency_lang = sa.Column (sa.String, nullable=True)
-    agency_phone = sa.Column (sa.String, nullable=True)
+    id = db.Column(db.String, primary_key=True, default=gen_key)
+    agency_id = db.Column (db.Integer, nullable=False)
+    agency_name = db.Column (db.String, nullable=False)
+    agency_url = db.Column (db.String, nullable=False)  
+    agency_timezone = db.Column (db.String, nullable=False)
+    agency_lang = db.Column (db.String, nullable=True)
+    agency_phone = db.Column (db.String, nullable=True)
 
     def __repr__(self):
         return "<Agency: {}>".format(self.agency_name)
@@ -39,17 +39,17 @@ class Calendar (Base):
 
     __tablename__ = 'calendar'
 
-    id = sa.Column(sa.String, primary_key=True, default=gen_key)
-    service_id = sa.Column (sa.Integer, nullable=False)
-    monday = sa.Column (sa.Integer, nullable=False)
-    tuesday = sa.Column (sa.Integer, nullable=False)
-    wednesday = sa.Column (sa.Integer, nullable=False)
-    thursday = sa.Column (sa.Integer, nullable=False)
-    friday = sa.Column (sa.Integer, nullable=False)
-    saturday = sa.Column (sa.Integer, nullable=False)
-    sunday = sa.Column (sa.Integer, nullable=False)
-    start_date = sa.Column (sa.DateTime(timezone=False), nullable=False)   # Start service day for the service interval. Service day in the YYYYMMDD format.
-    end_date = sa.Column (sa.DateTime(timezone=False), nullable=False)    # End service day for the service interval. This service day is included in the interval.
+    id = db.Column(db.String, primary_key=True, default=gen_key)
+    service_id = db.Column (db.Integer, nullable=False)
+    monday = db.Column (db.Integer, nullable=False)
+    tuesday = db.Column (db.Integer, nullable=False)
+    wednesday = db.Column (db.Integer, nullable=False)
+    thursday = db.Column (db.Integer, nullable=False)
+    friday = db.Column (db.Integer, nullable=False)
+    saturday = db.Column (db.Integer, nullable=False)
+    sunday = db.Column (db.Integer, nullable=False)
+    start_date = db.Column (db.DateTime(timezone=False), nullable=False)
+    end_date = db.Column (db.DateTime(timezone=False), nullable=False)
     
     def __repr__(self):
         return '<Calendar Service Id {}>'.format(self.service_id)
@@ -72,10 +72,10 @@ class CalendarDates (Base):
 
     __tablename__ = 'calendar_dates'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    agency_id = sa.Column (sa.Integer, nullable=False)             # foreign key to calendar      
-    date = sa.Column (sa.DateTime(timezone=False), nullable=False)
-    exception_type = sa.Column (sa.Integer, nullable=False)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    agency_id = db.Column (db.Integer, nullable=False)
+    date = db.Column (db.DateTime(timezone=False), nullable=False)
+    exception_type = db.Column (db.Integer, nullable=False)
 
     def __repr__(self):
         return '<Service exceptions {} Date: {}>'.format(self.agency_id, self.date)
@@ -90,12 +90,12 @@ class Frequencies (Base):
 
     __tablename__ = 'frequencies'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    trip_id = sa.Column (sa.Integer, nullable=False)
-    start_time = sa.Column (sa.DateTime(timezone=False), nullable=False) 
-    end_time = sa.Column (sa.DateTime (timezone=False), nullable=False)
-    headway_secs = sa.Column (sa.Integer, nullable=False)
-    exact_times = sa.Column (sa.Integer, nullable=True)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    trip_id = db.Column (db.Integer, nullable=False)
+    start_time = db.Column (db.DateTime(timezone=False), nullable=False) 
+    end_time = db.Column (db.DateTime (timezone=False), nullable=False)
+    headway_secs = db.Column (db.Integer, nullable=False)
+    exact_times = db.Column (db.Integer, nullable=True)
 
     def __repr__(self):
         return '<Transport frequencies {} Date: {}>'.format(self.trip_id, self.start_time)
@@ -116,15 +116,15 @@ class Routes (Base):
 
     __tablename__ = 'routes'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    route_id = sa.Column (sa.String, nullable=False)
-    agency_id = sa.Column (sa.Integer, nullable=False)  # foreign key to calendar    
-    route_short_name = sa.Column (sa.String, nullable=False)
-    route_long_name = sa.Column (sa.String, nullable=True)
-    route_type = sa.Column (sa.Integer, nullable=False)
-    route_color = sa.Column (sa.String, nullable=True)
-    route_text_color = sa.Column (sa.String, nullable=True)
-    route_desc = sa.Column (sa.String, nullable=True)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    route_id = db.Column (db.String, nullable=False)
+    agency_id = db.Column (db.Integer, nullable=False)   
+    route_short_name = db.Column (db.String, nullable=False)
+    route_long_name = db.Column (db.String, nullable=True)
+    route_type = db.Column (db.Integer, nullable=False)
+    route_color = db.Column (db.String, nullable=True)
+    route_text_color = db.Column (db.String, nullable=True)
+    route_desc = db.Column (db.String, nullable=True)
 
     def __repr__(self):
         return '<Route id: {}, short name: {}>'.format(self.route_id, self.route_short_name)
@@ -145,8 +145,8 @@ class ServiceAlerts (Base):
     
     __tablename__ = 'service_alerts'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    header = sa.Column(types.Object)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    header = db.Column(types.Object)
 
     def __init__(self, header):
         self.header = header
@@ -155,20 +155,17 @@ class Shapes (Base):
     """ 
     Model describing the path that a vehicle travels along a route alignment. 
     Shapes are associated with Trips, and consist of a sequence of points 
-    through which the vehicle passes in order. Shapes do not need to intercept 
-    the location of Stops exactly, but all Stops on a trip should lie within 
-    a small distance of the shape for that trip, i.e. close to straight line 
-    segments connecting the shape points.
+    through which the vehicle passes in order.
     
     """
     
     __tablename__ = 'shapes'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    shape_id = sa.Column (sa.Integer, nullable=False)
-    shape_pt_lat = sa.Column (sa.Float, nullable=False)
-    shape_pt_lon = sa.Column (sa.Float, nullable=False)
-    shape_pt_sequence = sa.Column (sa.Integer, nullable=False)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    shape_id = db.Column (db.Integer, nullable=False)
+    shape_pt_lat = db.Column (db.Float, nullable=False)
+    shape_pt_lon = db.Column (db.Float, nullable=False)
+    shape_pt_sequence = db.Column (db.Integer, nullable=False)
 
     def __repr__(self):
         return '<Travel shape {} lat: {} lon: >'.format(self.shape_id, \
@@ -189,18 +186,18 @@ class Stops (Base):
     
     __tablename__ = 'stops'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    stop_id = sa.Column (sa.String, nullable=False)
-    stop_code = sa.Column (sa.String, nullable=True)
-    stop_name = sa.Column (sa.String, nullable=False)
-    stop_desc = sa.Column (sa.Float, nullable=True)
-    stop_lat = sa.Column (sa.Float, nullable=False)
-    stop_lon = sa.Column (sa.Float, nullable=False)
-    location_type = sa.Column (sa.Integer, nullable=False)
-    parent_station = sa.Column (sa.Float, nullable=True)    # references stops.stops_id
-    wheelchair_boarding = sa.Column (sa.Float, nullable=True)
-    platform_code = sa.Column (sa.String, nullable=True)
-    zone_id = sa.Column (sa.String, nullable=True)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    stop_id = db.Column (db.String, nullable=False)
+    stop_code = db.Column (db.String, nullable=True)
+    stop_name = db.Column (db.String, nullable=False)
+    stop_desc = db.Column (db.Float, nullable=True)
+    stop_lat = db.Column (db.Float, nullable=False)
+    stop_lon = db.Column (db.Float, nullable=False)
+    location_type = db.Column (db.Integer, nullable=False)
+    parent_station = db.Column (db.Float, nullable=True)
+    wheelchair_boarding = db.Column (db.Float, nullable=True)
+    platform_code = db.Column (db.String, nullable=True)
+    zone_id = db.Column (db.String, nullable=True)
 
     def __repr__(self):
         return '<Transport stops {} {}>'.format(self.stop_id,self.stop_name)
@@ -229,17 +226,17 @@ class Trips (Base):
     
     __tablename__ = 'trips'
     
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    route_id = sa.Column (sa.String, nullable=False)    # reference routes.route_id               
-    service_id = sa.Column (sa.Integer, nullable=False)   # reference calendar.service_id or calendar_dates.service_id    
-    trip_id = sa.Column (sa.Integer, nullable=False)          
-    trip_headsign = sa.Column (sa.String, nullable=True)   
-    trip_short_name = sa.Column (sa.String, nullable=True)   #should be text, but comes as float?            
-    direction_id = sa.Column (sa.Integer, nullable=True) 
-    block_id = sa.Column (sa.Integer, nullable=True)     #should be int, but may come as float                
-    shape_id = sa.Column (sa.Integer, nullable=True)     # reference shapes.shape_id             
-    wheelchair_accessible = sa.Column (sa.Integer, nullable=True)    # should be int but comes as float  
-    bikes_allowed = sa.Column (sa.Integer, nullable=True)     # should be int but comes as float
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    route_id = db.Column (db.String, nullable=False)          
+    service_id = db.Column (db.Integer, nullable=False)
+    trip_id = db.Column (db.Integer, nullable=False)          
+    trip_headsign = db.Column (db.String, nullable=True)   
+    trip_short_name = db.Column (db.String, nullable=True)        
+    direction_id = db.Column (db.Integer, nullable=True) 
+    block_id = db.Column (db.Integer, nullable=True)               
+    shape_id = db.Column (db.Integer, nullable=True)           
+    wheelchair_accessible = db.Column (db.Integer, nullable=True)
+    bikes_allowed = db.Column (db.Integer, nullable=True)
  
     def __repr__(self):
         return '<Trips {} {}>'.format(self.trip_id, self.trip_headsign)
@@ -267,15 +264,15 @@ class StopTimes (Base):
     
     __tablename__ = 'stop_times'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    trip_id = sa.Column (sa.Integer, nullable=False)         # references trips.trip_id        
-    arrival_time = sa.Column (sa.String, nullable=False)
-    departure_time = sa.Column (sa.String, nullable=False)
-    stop_id = sa.Column (sa.String, nullable=False)         # references stops.stop_id
-    stop_sequence = sa.Column (sa.Integer, nullable=False)
-    pickup_type = sa.Column (sa.Integer, nullable=True)
-    drop_off_type = sa.Column (sa.Integer, nullable=True)
-    stop_headsign = sa.Column (sa.String, nullable=True)
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    trip_id = db.Column (db.Integer, nullable=False)     
+    arrival_time = db.Column (db.String, nullable=False)
+    departure_time = db.Column (db.String, nullable=False)
+    stop_id = db.Column (db.String, nullable=False) 
+    stop_sequence = db.Column (db.Integer, nullable=False)
+    pickup_type = db.Column (db.Integer, nullable=True)
+    drop_off_type = db.Column (db.Integer, nullable=True)
+    stop_headsign = db.Column (db.String, nullable=True)
  
     def __repr__(self):
         return '<Stop Times {} {}>'.format(self.stop_id, self.arrival_time)
@@ -300,15 +297,15 @@ class Transfers (Base):
     
     __tablename__ = 'transfers'
 
-    id = sa.Column (sa.String, primary_key=True, default=gen_key)
-    from_stop_id = sa.Column (sa.String, nullable=False)        # references stops.stop_id
-    to_stop_id = sa.Column (sa.String, nullable=False)          # references stops.stop_id
-    transfer_type = sa.Column (sa.Integer, nullable=False)
-    min_transfer_time = sa.Column (sa.Integer, nullable=True)   # Int or Float unclear !!!   
-    from_route_id = sa.Column (sa.String, nullable=True)        # references route.route_id
-    to_route_id = sa.Column (sa.String, nullable=True)            # references route.route_id     
-    from_trip_id = sa.Column (sa.Integer, nullable=True)     # Int or Float unclear, references trips??? !!!
-    to_trip_id = sa.Column (sa.Integer, nullable=True)    # Int or Float unclear, references trips??? !!!
+    id = db.Column (db.String, primary_key=True, default=gen_key)
+    from_stop_id = db.Column (db.String, nullable=False)
+    to_stop_id = db.Column (db.String, nullable=False)
+    transfer_type = db.Column (db.Integer, nullable=False)
+    min_transfer_time = db.Column (db.Integer, nullable=True)   
+    from_route_id = db.Column (db.String, nullable=True)
+    to_route_id = db.Column (db.String, nullable=True) 
+    from_trip_id = db.Column (db.Integer, nullable=True)
+    to_trip_id = db.Column (db.Integer, nullable=True)
     
     def __repr__(self):
         return '<Transfers {} {}>'.format(self.from_stop_id, self.to_stop_id)

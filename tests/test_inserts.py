@@ -1,3 +1,4 @@
+import time
 import pytest
 from transitdata import db
 from sqlalchemy.orm import sessionmaker
@@ -7,8 +8,6 @@ from transitdata.models import (Agency, Calendar, CalendarDates,
                                 Trips)
 from transitdata.models import Base
 from transitdata.config import TestingConfig
-
-import time
 
 engine = db.create_engine(TestingConfig.SQLALCHEMY_DATABASE_URI, {})
 

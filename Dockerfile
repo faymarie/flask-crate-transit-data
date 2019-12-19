@@ -2,26 +2,39 @@ FROM python:3.7-stretch
 
 ENV LANG C.UTF-8
 
-RUN apt-get update -qq && apt-get install -qqy --no-install-recommends \
-     openssh-client \
-     python3-pip \
-     python3-setuptools \
-     python3-wheel \
-     git \
-     build-essential \
-     python3-dev
+WORKDIR /app
 
-COPY requirements/. /srv/requirements/.
+RUN apt-get update -y && \
+     apt-get -qq -y install python-pip python-dev && \
+     curl \
+     unzip
+     # pipenv install
+     # openssh-client \
+     # python3-setuptools \
+     # python3-wheel \
+     # build-essential \
 
-WORKDIR /srv
+COPY ./requirements.txt /app/requirements.txt
 
-ARG FLASK_ENV
-ENV FLASK_ENV=${FLASK_ENV}
+RUN python -m venv venv
 
-RUN pip3 install -r requirements/${FLASK_ENV}.txt
+RUN python -m venv venv
 
-COPY . /srv/
+RUN pip install -r requirements.txt
+
+COPY . /app
+
+RUN curl https://www.vbb.de/media/download/2029/GTFS.zip
+
+RUN unzip GTFS.zip -d app/transitdata/static/data/
+
+RUN rm GTFS.zip
 
 EXPOSE 5000
 
-ENTRYPOINT ["bash", "./run_app.sh"]
+ENTRYPOINT ["python"]
+
+CMD ["run.py"]
+
+# ARG FLASK_ENV
+# ENV FLASK_ENV=${FLASK_ENV}

@@ -58,15 +58,15 @@ def insert_data_from(file_path, table_name):
             db.session.flush()
     try:
         db.session.commit()
-        print("Successfully inserted: " + table_name)
-    except SQLAlchemyError:
+        print("Successfully inserted: " + table_name + "\n")
+    except SQLAlchemyError as e:
         db.session.rollback()
-        raise
-        
+        print(e)
+
     
 def parse_header_to_dict(file_path):
     """ 
-    Return header file values as dictionary with tring values. 
+    Return header file values as dictionary. 
     Remove whitespaces and quotation marks. 
         
     """
@@ -76,15 +76,14 @@ def parse_header_to_dict(file_path):
         lines = [line.strip().replace('\"', '') for line in lines]
         lines = [line.split(' : ') for line in lines]
         lines = dict(zip([val[0] for val in lines], [val[1] for val in lines]))
-        print(lines)
 
     return lines
 
 def insert_transitdata():
-    """ Retrieve data files and process one-by-one to be inserted into database. """    
+    """ Retrieve data files and insert each into database. """    
 
     files = glob.glob(os.path.join("transitdata", "static", "data", "*.txt"))
     for file_path in files:
         table_name = os.path.basename(file_path)[:-4]
-        print("Processing: " + table_name)
+        print("Processing: " + table_name + "...")
         insert_data_from(file_path, table_name)

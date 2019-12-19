@@ -1,16 +1,34 @@
 {% extends "layout.html" %}
 {% block content %}
-
-    {% for tile in tiles %}
+    {% if agencies %}
+    {% for agency in agencies %}
         <article class="media content-section">
             <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2" href="#">{{ tile.author }}</a>
-                <small class="text-muted">{{ tile.date_posted }}</small>
+                <a class="mr-2" href="#">{{ agency.agency_url }}</a>
+                <small class="text-muted">{{ agency.agency_timezone }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ tile.title }}</a></h2>
-            <p class="article-content">{{ tile.content }}</p>
+            <h2><a class="article-title" href="#">{{ agency.agency_name }}</a></h2>
+            <p class="article-content">
+                Liebe #Greta, danke, dass Du uns Eisenbahner im Kampf gegen 
+                den Klimawandel unterstützt! Wir haben uns gefreut, dass Du 
+                am Samstag mit uns im ICE 74 unterwegs warst. Und das mit 100 
+                Prozent Ökostrom. 1/2
+                --
+                Noch schöner wäre es gewesen, wenn Du zusätzlich auch berichtet 
+                hättest, wie freundlich und kompetent Du von unserem Team an 
+                Deinem Sitzplatz in der Ersten Klasse betreut worden bist. 
+                #Greta 2/2</p>
             </div>
         </article>
     {% endfor %}
+    {% else %}
+    <article class="media content-section">
+        <div class="media-body">
+            <h2>Nothing to show, my friend. Update the page after the upload is finished.</h2>
+            <p class="article-content">
+                A human who is a master of patience is master of everything else.</p>
+        </div>
+    </article>
+    {% endif %}
 {% endblock content %}
