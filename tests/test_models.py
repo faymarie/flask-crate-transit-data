@@ -2,10 +2,7 @@ import pytest
 from datetime import date 
 import pandas as pd
 import json
-# from tests.conftest import test_client
 from transitdata import db
-# from flask import Flask
-# from transitdata.models import (Agency, Calendar, CalendarDates)
 from transitdata.config import TestingConfig
 
 def test_new_agency(new_agency):
@@ -42,9 +39,9 @@ def test_new_calendar_dates(new_calendar_dates):
 def test_frequencies(new_frequencies):
     
     assert new_frequencies.trip_id == 7
-    assert new_frequencies.start_time == date.today()
-    assert new_frequencies.end_time == date.today()
-    assert new_frequencies.headway_secs == 999999999999999999999999999999
+    assert new_frequencies.start_time == pd.to_datetime(date.today())
+    assert new_frequencies.end_time == pd.to_datetime(date.today())
+    assert new_frequencies.headway_secs == 99999999
     assert new_frequencies.exact_times == 10
     assert new_frequencies.id != "a bad id"
 

@@ -191,7 +191,7 @@ class Stops (Base):
 
     id = sa.Column (sa.String, primary_key=True, default=gen_key)
     stop_id = sa.Column (sa.String, nullable=False)
-    stop_code = sa.Column (sa.Float, nullable=True)
+    stop_code = sa.Column (sa.String, nullable=True)
     stop_name = sa.Column (sa.String, nullable=False)
     stop_desc = sa.Column (sa.Float, nullable=True)
     stop_lat = sa.Column (sa.Float, nullable=False)
