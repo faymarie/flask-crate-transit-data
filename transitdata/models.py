@@ -92,18 +92,20 @@ class Frequencies (Base):
 
     id = sa.Column (sa.String, primary_key=True, default=gen_key)
     trip_id = sa.Column (sa.Integer, nullable=False)
-    start_time = sa.Column (sa.DateTime(timezone=False), nullable=False) # Time at which the first vehicle departs from the first stop of the trip with the specified headwa               
-    end_time = sa.Column (sa.DateTime (timezone=False), nullable=False)  # Time at which service changes to a different headway (or ceases) at the first stop in the trip.
-    headway_secs = sa.Column (sa.Integer, nullable=False) #Time, in seconds, between departures from the (same stop (headway) for the trip, during the time interval specified by start_time and end_time.
+    start_time = sa.Column (sa.DateTime(timezone=False), nullable=False) 
+    end_time = sa.Column (sa.DateTime (timezone=False), nullable=False)
+    headway_secs = sa.Column (sa.Integer, nullable=False)
     exact_times = sa.Column (sa.Integer, nullable=True)
 
     def __repr__(self):
-        return '<Transport frequencies {} Date: {}>'.format(self.trip_id, self.headway_secs)
+        return '<Transport frequencies {} Date: {}>'.format(self.trip_id, self.start_time)
 
     def __init__(self, trip_id, start_time, end_time, headway_secs, exact_times):
         self.trip_id = trip_id
         self.start_time = start_time
         self.end_time = end_time
+        self.headway_secs = headway_secs 
+        self.exact_times = exact_times
 
 class Routes (Base):
     """ 
@@ -145,6 +147,9 @@ class ServiceAlerts (Base):
 
     id = sa.Column (sa.String, primary_key=True, default=gen_key)
     header = sa.Column(types.Object)
+
+    def __init__(self, header):
+        self.header = header
 
 class Shapes (Base):
     """ 

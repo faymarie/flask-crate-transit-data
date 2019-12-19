@@ -1,32 +1,41 @@
 import os
 from flask import Flask
-import sqlalchemy as sa
-# from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import sessionmaker, mapper
-from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker
 from transitdata.config import Config
 from flask_cors import CORS
-# from crate import client
-from sqlalchemy.ext.declarative import declarative_base
 from transitdata.config import Config
 from transitdata.models import Base
+from flask_session import Session
+
+# connect to crateDB 
+db = SQLAlchemy()
 
 def create_app(config_class=Config):
     """ Initialize core application. """
     
     app = Flask(__name__)
-    app.config.from_object(Config)
-    
-    # connect to crateDB 
-    engine = sa.create_engine(Config.SQLALCHEMY_DATABASE_URI)
-    
-    # create tables
+    app.config.from_object(config_class)
+    CORS(app)
+
+    with app.app_context():
+        db.init_app(app)
+        register_blueprints(app)
+
+    # connct to crate and create tables
+    engine = db.create_engine(config_class.SQLALCHEMY_DATABASE_URI, {})
     Base.metadata.create_all(engine)
 
-    # register blueprints
+    return app
+
+def register_blueprints(app):
     from transitdata.main.routes import main
     from transitdata.errors.handlers import errors
     app.register_blueprint(main)
     app.register_blueprint(errors)
 
-    return app
+def start_session(engine):
+    connection = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session

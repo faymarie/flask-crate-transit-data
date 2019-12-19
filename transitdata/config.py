@@ -15,20 +15,9 @@ class Config(object):
     # FLASK_ENV = environ.get('FLASK_ENV')
 
 
-class ProductionConfig(Config):
-    DEBUG = False
-    DATABASE_URI = 'crate://crate@localhost:4200'
-
-
-# class StagingConfig(Config):
-#     DEVELOPMENT = True
-#     DEBUG = True
-
-
-# class DevelopmentConfig(Config):
-#     DEVELOPMENT = True
-#     DEBUG = True
-
-
-# class TestingConfig(Config):
-#     TESTING = True
+class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'crate://crate@192.168.99.101:4200'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'affiav'
+    TESTING = True
+    DEBUG = True

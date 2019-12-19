@@ -1,14 +1,14 @@
-
 import pandas as pd
 import numpy as np
 import os
 import glob
 from flask import current_app
-import sqlalchemy as sa
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, mapper
+from transitdata import db
+# import sqlalchemy as sa
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker, mapper
 from transitdata.models import Base, ServiceAlerts
-from transitdata.config import Config
+# from transitdata.config import Config
 
 
 # source: https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
@@ -42,18 +42,12 @@ def insert_data_from(file_path, table_name):
     in chunks and loaded in bulk to the database.
     
     """
-
-    # connect to crateDB and initiate a session
-    engine = sa.create_engine(Config.SQLALCHEMY_DATABASE_URI)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
     c = get_class_by_tablename(table_name)
 
     # handle service alert messages, else all other files in table format
     if table_name =='service_alerts':
         service_alert = parse_service_alerts(pd.read_csv(file_path))
-        session.add(service_alert)
+        db.session.add(service_alert)
     else:
         for chunk in pd.read_csv(file_path, chunksize=10000):
 
@@ -61,10 +55,10 @@ def insert_data_from(file_path, table_name):
             chunk.replace({np.nan:None}, inplace=True)
             chunk = parse_to_datetime(chunk)
             
-            session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
-            session.flush()
+            db.session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
+            db.session.flush()
 
-    session.commit()
+    db.session.commit()
     print("Successfully inserted: " + table_name)
 
 def parse_service_alerts(df):
