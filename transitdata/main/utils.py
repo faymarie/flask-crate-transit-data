@@ -1,15 +1,18 @@
-import pandas as pd
-import numpy as np
 import os
 import glob
-import json
+import pandas as pd
+import numpy as np
 from flask import current_app
-from transitdata import db
 from sqlalchemy.exc import SQLAlchemyError
+from transitdata import db
 from transitdata.models import Base, ServiceAlerts
 
 
-# source: https://stackoverflow.com/questions/11668355/sqlalchemy-get-model-from-table-name-this-may-imply-appending-some-function-to
+"""
+from source: "https://stackoverflow.com/questions/11668355/ \
+            sqlalchemy-get-model-from-table-name-this-may- \
+            imply-appending-some-function-to" 
+"""
 def get_class_by_tablename(table_fullname):
     """
     Return class reference mapped to table.
@@ -21,7 +24,6 @@ def get_class_by_tablename(table_fullname):
         if hasattr(c, '__table__') and c.__table__.fullname == table_fullname:
             return c
 
-
 def parse_to_datetime(df):
     """ Return dataframe with converted datetime objects. """
 
@@ -31,7 +33,6 @@ def parse_to_datetime(df):
             df[col] = pd.to_datetime(df[col], format='%Y%m%d')
 
     return df
-
 
 def insert_data_from(file_path, table_name):
     """ 
@@ -54,6 +55,7 @@ def insert_data_from(file_path, table_name):
             chunk.replace({np.nan:None}, inplace=True)
             chunk = parse_to_datetime(chunk)
             
+            # insert data
             db.session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
             db.session.flush()
     try:
@@ -62,7 +64,6 @@ def insert_data_from(file_path, table_name):
     except SQLAlchemyError as e:
         db.session.rollback()
         print(e)
-
     
 def parse_header_to_dict(file_path):
     """ 

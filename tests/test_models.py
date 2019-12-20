@@ -1,9 +1,8 @@
 import pytest
+import json
 from datetime import date 
 import pandas as pd
-import json
-from transitdata import db
-from transitdata.config import TestingConfig
+
 
 def test_new_agency(new_agency):
 
@@ -59,7 +58,9 @@ def test_routes(new_routes):
 
 def test_service_alerts(new_service_alerts):
 
-    assert new_service_alerts.header ==  json.loads('{"gtfs_realtime_version": "2.0", "incrementality":"DIFFERENTIAL", "timestamp":"1575622745"}')
+    assert new_service_alerts.header ==  json.loads('{"gtfs_realtime_version": "2.0", \
+                                                    "incrementality":"DIFFERENTIAL", \
+                                                    "timestamp":"1575622745"}')
     assert new_service_alerts.id != "a bad id"
 
 def test_shapes(new_shapes):

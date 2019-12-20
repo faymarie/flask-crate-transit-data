@@ -32,6 +32,11 @@ If you are a Mac user, activate your environment by running
 If you are a Windows user, activate your environment by running 
 ``sh$ source myenv/Scripts/activate``
 
+# Run the docker image
+
+``docker-compose up``
+``docker run -it -d -p 5000:5000 transitdata``
+
 # Running test
 
 To run the tests, run the pytest module:

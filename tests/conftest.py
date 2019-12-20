@@ -1,15 +1,12 @@
 import pytest
 import pandas as pd
-import transitdata
-from sqlalchemy.orm import sessionmaker
 from datetime import date
 from transitdata.models import (Agency, Calendar, CalendarDates, 
                                 Frequencies, Routes, ServiceAlerts,
                                 Shapes, Stops, StopTimes, Transfers,
-                                Trips)
+                                Trips, Base)
 from transitdata import create_app, db
 from transitdata.config import TestingConfig
-from transitdata.models import Base
 
 
 @pytest.fixture
@@ -22,7 +19,8 @@ def test_client():
     yield testing_client
     
     context.pop()
-    
+
+# to collect all fixtures for insertion    
 test_data = []
 
 @pytest.fixture(scope="module")

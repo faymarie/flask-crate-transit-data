@@ -1,11 +1,13 @@
-FROM python:3.7-stretch
+FROM debian:buster
+# FROM python:3.7-stretch
 
 ENV LANG C.UTF-8
 
 WORKDIR /app
 
-RUN apt-get update -y && \
-     apt-get -qq -y install python-pip python-dev && \
+RUN apt-get update -y \
+     && apt-get -qq -y install python-dev \
+     && pip3 install --upgrade pip \
      curl \
      unzip
      # pipenv install
@@ -15,8 +17,6 @@ RUN apt-get update -y && \
      # build-essential \
 
 COPY ./requirements.txt /app/requirements.txt
-
-RUN python -m venv venv
 
 RUN python -m venv venv
 

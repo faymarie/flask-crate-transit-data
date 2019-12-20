@@ -1,21 +1,18 @@
-from os import environ
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = 'crate://crate@192.168.99.101:4200'
+    SQLALCHEMY_DATABASE_URI = os.getenv("DEV_DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'affiav'
-    # CRATE_HOST = 'localhost:4200'
-    DEBUG = True
+    SECRET_KEY = os.getenv("DEV_SECRET_KEY")
     TESTING = False
-
-    # SECRET_KEY = environ.get('SECRET_KEY')
-    # FLASK_APP = environ.get('FLASK_APP')
-    # FLASK_ENV = environ.get('FLASK_ENV')
-
+    DEBUG = True
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'crate://crate@192.168.99.101:4200'
+    SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'affiav'
+    SECRET_KEY = os.getenv("TEST_SECRET_KEY")
     TESTING = True
     DEBUG = True

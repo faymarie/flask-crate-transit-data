@@ -1,9 +1,9 @@
 import time
+from flask import (render_template, request, Blueprint, 
+                    redirect, url_for, current_app, flash)
 from transitdata import db
 from transitdata.models import Agency
-from flask import render_template, request, Blueprint, redirect, url_for, current_app, flash
 from transitdata.main.utils import insert_transitdata
-from  sqlalchemy.sql.expression import func
 
 main = Blueprint('main', __name__)
 
@@ -16,11 +16,14 @@ def home():
             insert_transitdata()
             flash('All data has been inserted.', 'success')
             time.sleep(10)
+            
             return redirect(url_for('main.success'))
         except:
             flash('Error inserting data', 'error')
+
             return render_template('home.html')
     elif request.method == 'GET':  
+
         return render_template('home.html')
 
 @main.route('/success')

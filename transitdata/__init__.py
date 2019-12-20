@@ -1,14 +1,11 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import sessionmaker
-from transitdata.config import Config
 from flask_cors import CORS
 from transitdata.config import Config
 from transitdata.models import Base
-from flask_session import Session
 
-# connect to crateDB 
+
 db = SQLAlchemy()
 
 def create_app(config_class=Config):
@@ -22,7 +19,7 @@ def create_app(config_class=Config):
         db.init_app(app)
         register_blueprints(app)
 
-    # connect to crate and create tables
+    # connect to crateDB and create tables
     engine = db.create_engine(config_class.SQLALCHEMY_DATABASE_URI, {})
     Base.metadata.create_all(engine)
 
@@ -33,9 +30,3 @@ def register_blueprints(app):
     from transitdata.errors.handlers import errors
     app.register_blueprint(main)
     app.register_blueprint(errors)
-
-def start_session(engine):
-    connection = engine.connect()
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
