@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+# from flask_cors import CORS
 from transitdata.config import Config
 from transitdata.models import Base
 
@@ -13,7 +13,7 @@ def create_app(config_class=Config):
     
     app = Flask(__name__)
     app.config.from_object(config_class)
-    CORS(app)
+    # CORS(app)
 
     with app.app_context():
         db.init_app(app)

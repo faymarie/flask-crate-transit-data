@@ -20,13 +20,13 @@ def home():
             return redirect(url_for('main.success'))
         except:
             flash('Error inserting data', 'error')
-
-            return render_template('home.html')
+            
+            return redirect(url_for('main.home'))
     elif request.method == 'GET':  
 
         return render_template('home.html')
 
-@main.route('/success')
+@main.route('/success', methods=['GET'])
 def success():
     agencies = db.session.query(Agency).limit(10).all()
    

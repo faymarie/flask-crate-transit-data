@@ -47,23 +47,27 @@ def insert_data_from(file_path, table_name):
     if table_name =='service_alerts':
         header = parse_header_to_dict(file_path)
         service_alert = ServiceAlerts(header)
-        db.session.add(service_alert)
+        try:
+            db.session.add(service_alert)
+        except SQLAlchemyError as e:
+            print(e)
+            db.session.rollback()
     else:
         for chunk in pd.read_csv(file_path, chunksize=10000):
 
             # handle integrity errors
             chunk.replace({np.nan:None}, inplace=True)
             chunk = parse_to_datetime(chunk)
-            
+
             # insert data
-            db.session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
-            db.session.flush()
-    try:
-        db.session.commit()
+            try:
+                db.session.bulk_insert_mappings(c, chunk.to_dict(orient="records"))
+                db.session.flush()
+                db.session.commit()
+            except SQLAlchemyError as e:
+                print(e)
+                db.session.rollback()
         print("Successfully inserted: " + table_name + "\n")
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        print(e)
     
 def parse_header_to_dict(file_path):
     """ 
@@ -84,7 +88,9 @@ def insert_transitdata():
     """ Retrieve data files and insert each into database. """    
 
     files = glob.glob(os.path.join("transitdata", "static", "data", "*.txt"))
+    # print("Processing: ...")
+    # insert_data_from('transitdata/static/data/stop_times.txt', 'stop_times')
     for file_path in files:
         table_name = os.path.basename(file_path)[:-4]
-        print("Processing: " + table_name + "...")
+        print("Processing: " + table_name + " ...")
         insert_data_from(file_path, table_name)

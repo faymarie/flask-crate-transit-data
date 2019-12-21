@@ -1,40 +1,30 @@
-FROM debian:buster
-# FROM python:3.7-stretch
+FROM python:3.7-stretch
 
 ENV LANG C.UTF-8
 
-WORKDIR /app
-
-RUN apt-get update -y \
-     && apt-get -qq -y install python-dev \
-     && pip3 install --upgrade pip \
+RUN apt-get update -y && \
+     apt-get install -y python-pip \
+     python-dev \
      curl \
      unzip
-     # pipenv install
-     # openssh-client \
-     # python3-setuptools \
-     # python3-wheel \
-     # build-essential \
 
 COPY ./requirements.txt /app/requirements.txt
 
-RUN python -m venv venv
+WORKDIR /app
+
+ARG FLASK_ENV
+ENV FLASK_ENV=${FLASK_ENV}
 
 RUN pip install -r requirements.txt
 
 COPY . /app
 
-RUN curl https://www.vbb.de/media/download/2029/GTFS.zip
-
-RUN unzip GTFS.zip -d app/transitdata/static/data/
-
-RUN rm GTFS.zip
+RUN curl https://www.vbb.de/media/download/2029/GTFS.zip && \
+     unzip GTFS.zip -d app/transitdata/static/data/ && \
+     rm GTFS.zip
 
 EXPOSE 5000
 
-ENTRYPOINT ["python"]
+ENTRYPOINT [ "python" ]
 
-CMD ["run.py"]
-
-# ARG FLASK_ENV
-# ENV FLASK_ENV=${FLASK_ENV}
+CMD [ "run.py" ]

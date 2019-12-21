@@ -1,16 +1,20 @@
-version: "2"
+version: "3"
 services:
     app:
+        restart: always
         build: ./app
+        depends_on: 
+          - cratedb
         links:
-            - db
+            - cratedb
         ports:
             - "5000:5000"
-    db:
-        image: crate
+          
+    cratedb:
+        restart: always
+        image: crate:latest
         ports:
-          - "192.168.99.101:4200"
-        # environment:
-        #     MYSQL_ROOT_PASSWORD: root
-        volumes:
-          - ./db:/docker-entrypoint-initdb.d/:ro
+          - "192.168.99.101:4200:4200"
+        environment:
+          - SQLALCHEMY_DATABASE_URI = $(SQLALCHEMY_DATABASE_URI)
+          - SECRET_KEY = $(SECRET_KEY)
