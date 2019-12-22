@@ -1,20 +1,24 @@
 version: "3"
 services:
     app:
-        restart: always
-        build: ./app
-        depends_on: 
+        # build: .
+        build:
+          context: .
+          dockerfile: Dockerfile
+        image: transitdata:latest
+        depends_on:
           - cratedb
-        links:
-            - cratedb
+        # links:
+        #     - cratedb
         ports:
             - "5000:5000"
-          
+        stdin_open: true
+        tty: true
     cratedb:
-        restart: always
+        # restart: always
         image: crate:latest
         ports:
-          - "192.168.99.101:4200:4200"
+          - "4200:4200"
         environment:
-          - SQLALCHEMY_DATABASE_URI = $(SQLALCHEMY_DATABASE_URI)
-          - SECRET_KEY = $(SECRET_KEY)
+          - DATABASE_URI=crate://crate@cratedb:4200
+          - SECRET=1234
