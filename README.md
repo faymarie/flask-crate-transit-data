@@ -31,7 +31,7 @@ Stop the app by running the below command:
 ## Settings
 ### Host
 
-If your host for CrateDB differs from localhost (e.g. when using VirtualBox/Docker Toolbox) you need to assign the host ip to the database URI. Replace <vm name> by the name of your virtal machine. 
+If your host ip for CrateDB differs from localhost (e.g. when using VirtualBox/Docker Toolbox) you need to assign the host ip to the database URI. Replace <vm name> by the name of your virtal machine. 
     
 `export DATABASE_URI==crate://crate@$(docker-machine ip <vm name>):4200`
 
@@ -57,30 +57,30 @@ Once, it is finished, you will be routed to success.
 You can track the status of the insertion on your terminal and on the CrateDB UI. 
 
 # Running tests
-The tests are using the pytest module. You need to have python, pip and virtualenv installed on your system.
+The tests are using the pytest module. You need to have Docker, Python, pip and virtualenv installed on your system.
 
 1. Start and activate a virtual environment in the root directory using venv.
   
-`python -m venv myenv`  
+    `python -m venv myenv`  
   
-`source myenv/bin/activate`  
+    `source myenv/bin/activate`  
   
 2. Install requirements.
    
-`pip install -r requirements.txt`
+    `pip install -r requirements.txt` 
 
-3. Set the environment variables using localhost or host ip and choosing a password:
-  
-`sh$ export DATABASE_URI=crate://crate@localhost:4200`  
-`sh$ export SECRET=supersecretpassword`  
-
-4. Run the official CrateDB Docker image.  
+3. Run the official CrateDB Docker image.  
     
-`sh$ docker run -p "4200:4200" crate`    
+    `sh$ docker run -p "4200:4200" crate`    
+
+4. Set the environment variables using localhost (or host ip) and choosing a password:
   
+    `sh$ export DATABASE_URI=crate://crate@localhost:4200`  
+    `sh$ export SECRET=supersecretpassword` 
+
 5. Run the tests module.
   
-`sh$ ./scripts/start.test`  
+    `sh$ ./scripts/run.test`  
 
 ## Troubleshoot
 

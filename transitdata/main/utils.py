@@ -67,7 +67,7 @@ def insert_data_from(file_path, table_name):
             except SQLAlchemyError as e:
                 print(e)
                 db.session.rollback()
-        print("Successfully inserted: " + table_name + "\n")
+        print("\nSuccessfully inserted: " + table_name + "\n")
     
 def parse_header_to_dict(file_path):
     """ 
@@ -88,9 +88,7 @@ def insert_transitdata():
     """ Retrieve data files and insert each into database. """    
 
     files = glob.glob(os.path.join("transitdata", "static", "data", "*.txt"))
-    # print("Processing: ...")
-    # insert_data_from('transitdata/static/data/stop_times.txt', 'stop_times')
     for file_path in files:
         table_name = os.path.basename(file_path)[:-4]
-        print("Processing: " + table_name + " ...")
+        print("\nProcessing: " + table_name + " ...")
         insert_data_from(file_path, table_name)

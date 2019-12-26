@@ -28,5 +28,4 @@ ENV SECRET=$SECRET
 
 EXPOSE 5000
 
-# CMD ["scripts/run.docker.ash"]
 ENTRYPOINT [ "python", "run.py" ]
