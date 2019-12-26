@@ -1,0 +1,8 @@
+#!/bin/bash
+ 
+echo "Download data..."
+wget -q https://www.vbb.de/media/download/2029/GTFS.zip
+unzip GTFS.zip -d transitdata/static/data/
+rm GTFS.zip
+echo "Download complete. Run tests."
+pytest

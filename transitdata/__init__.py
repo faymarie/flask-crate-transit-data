@@ -20,7 +20,7 @@ def create_app(config_class=Config):
         register_blueprints(app)
 
     # connect to crateDB and create tables
-    engine = db.create_engine(config_class.SQLALCHEMY_DATABASE_URI, {})
+    engine = db.create_engine(config_class.SQLALCHEMY_DATABASE_URI, {} )
     Base.metadata.create_all(engine)
 
     return app

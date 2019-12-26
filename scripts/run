@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+DATABASE_URI=${DATABASE_URI:-crate://crate@192.168.99.102:4200}
+SECRET=${SECRET:-1supersecretpassword1}
+
+DATABASE_URI=${DATABASE_URI} SECRET=${SECRET} docker-compose up
