@@ -2,11 +2,11 @@
 
 A flask app using CrateDB and Docker to inserts public transit data (VBB-Fahrplandaten via GTFS) into CrateDB.
 
-# Requirements
+## Requirements
 
-Project requires Docker, Docker Toolbox and docker-compose in your development environment.
+Project requires Docker, docker-compose and Linux/Unix in your development environment.
 
-# Installation instructions CrateDB
+## Installation
 
 If you run Docker on a Linux system, you may need to adjust the memory map limit on your host system before running the images.
 
@@ -14,7 +14,7 @@ Linux:
 `sh$ sudo sysctl -w vm.max_map_count=262144`
 
 Windows running a Linux VirtualBox on docker-machine:    
-`sh$ docker-machine ssh default "sudo sysctl -w vm.max_map_count=262144"`
+`sh$ docker-machine ssh <vm name> "sudo sysctl -w vm.max_map_count=262144"`
 
 ## Run the app
 
@@ -33,7 +33,7 @@ Stop the app by running the below command:
 
 If your host ip for CrateDB differs from localhost (e.g. when using VirtualBox/Docker Toolbox) you need to assign the host ip to the database URI. Replace <vm name> by the name of your virtal machine. 
     
-`export DATABASE_URI==crate://crate@$(docker-machine ip <vm name>):4200`
+`export DATABASE_URI=crate://crate@$(docker-machine ip <vm name>):4200`
 
 ### Password  
 
@@ -47,7 +47,7 @@ To see the app running, navigate to:
   
 `http://localhost:5000/` 
   
-You can visit the CrateDB admin UI in your browser with this URL. Replace localhost by your host ip, if you are using a different host. 
+You can visit the CrateDB admin UI in your browser with this URL. Replace localhost with your host ip, if you are using a different host. 
   
 `http://localhost:4200/`
   
@@ -56,7 +56,7 @@ Once, it is finished, you will be routed to success.
 
 You can track the status of the insertion on your terminal and on the CrateDB UI. 
 
-# Running tests
+## Running tests
 The tests are using the pytest module. You need to have Docker, Python, pip and virtualenv installed on your system.
 
 1. Start and activate a virtual environment in the root directory using venv.
@@ -73,7 +73,7 @@ The tests are using the pytest module. You need to have Docker, Python, pip and 
     
     `sh$ docker run -p "4200:4200" crate`    
 
-4. Set the environment variables using localhost (or host ip) and choosing a password:
+4. Set the environment variables by exporting the CrateDB's database URI and by choosing a password.         Replace localhost by your host ip, if your host adress differs from localhost. 
   
     `sh$ export DATABASE_URI=crate://crate@localhost:4200`  
     `sh$ export SECRET=supersecretpassword` 
@@ -86,5 +86,5 @@ The tests are using the pytest module. You need to have Docker, Python, pip and 
 
 You may need to reinstall numpy using conda as its dependencies may depend on your system.
   
-``pip uninstall numpy``     
-``conda install numpy``  
+`pip uninstall numpy`     
+`conda install numpy`  
